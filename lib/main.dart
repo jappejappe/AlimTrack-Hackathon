@@ -12,6 +12,11 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: LoginScreen(),
+      theme: ThemeData(
+        inputDecorationTheme: InputDecorationTheme(
+          labelStyle: TextStyle(color: Colors.black)
+        )
+      ),
       title: "AlimTrack",
       debugShowCheckedModeBanner: false,
     );
