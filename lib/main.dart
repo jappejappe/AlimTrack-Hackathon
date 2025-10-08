@@ -12,7 +12,12 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: CardapioScreen(),
+      home: LoginScreen(),
+      theme: ThemeData(
+        inputDecorationTheme: InputDecorationTheme(
+          labelStyle: TextStyle(color: Colors.black)
+        )
+      ),
       title: "AlimTrack",
       debugShowCheckedModeBanner: false,
 
