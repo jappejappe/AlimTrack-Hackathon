@@ -1,1 +1,3 @@
-# AlimTrack-Hackathon
+# AlimTrack
+
+A new Flutter project.
