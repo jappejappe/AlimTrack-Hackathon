@@ -2,7 +2,7 @@ CREATE TABLE public.consumidores (
 	nome_consumidor varchar NOT NULL,
 	matricula varchar NULL,
 	senha varchar NOT NULL,
-	cpf_consumidor char NULL,
+	cpf_consumidor char(11) NULL,
 	dias_padrao json NOT NULL,
 	CONSTRAINT consumidores_pk PRIMARY KEY (matricula),
 	CONSTRAINT consumidores_unique UNIQUE (cpf_consumidor)
@@ -18,7 +18,7 @@ CREATE TABLE public.cozinheiros (
 CREATE TABLE public.cardapios (
 	dia date NOT NULL,
 	cardapio json NOT NULL,
-	CONSTRAINT cardapios_pk PRIMARY KEY ("data")
+	CONSTRAINT cardapios_pk PRIMARY KEY (dia)
 );
 
 CREATE TABLE public.reservas (
