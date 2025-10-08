@@ -12,7 +12,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: LoginScreen(),
+      home: CardapioScreen(),
       theme: ThemeData(
         inputDecorationTheme: InputDecorationTheme(
           labelStyle: TextStyle(color: Colors.black)
