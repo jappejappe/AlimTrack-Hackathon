@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:alimtrack/screens/login.dart';
+import 'package:alimtrack/screens/cardapio.dart';
 
 void main() {
   runApp(const MainApp());
@@ -11,9 +12,15 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: LoginScreen(),
+      home: CardapioScreen(),
       title: "AlimTrack",
       debugShowCheckedModeBanner: false,
+
+      routes: {
+        '/login': (context) => LoginScreen(),
+        '/cardapio': (context) => CardapioScreen(),
+        // Medicine routes
+      },
     );
   }
 }
