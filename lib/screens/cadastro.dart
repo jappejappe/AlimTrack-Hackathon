@@ -1,11 +1,14 @@
-import 'package:alimtrack/screens/cadastro.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatelessWidget {
+class CadastroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFd5d8ba),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+      ),
       body: Container(
         padding: EdgeInsets.all(24.0),
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
@@ -14,7 +17,7 @@ class LoginScreen extends StatelessWidget {
             Image.asset("../../assets/profile.png", height: 200),
             SizedBox(height: 10),
             Text(
-              "LOGIN",
+              "CADASTRO",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 32),
             ),
@@ -25,7 +28,17 @@ class LoginScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: Colors.black),
                 ),
-                labelText: "Matrícula/CPF",
+                labelText: "Nome Completo",
+              ),
+            ),
+            SizedBox(height: 20),
+            TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.black),
+                ),
+                labelText: "E-mail",
               ),
             ),
             SizedBox(height: 20),
@@ -38,44 +51,6 @@ class LoginScreen extends StatelessWidget {
                 labelText: "Senha",
               ),
             ),
-            SizedBox(height: 20),
-            Row(
-              children: [
-                Checkbox(value: true, onChanged: (value) {}),
-                Text(
-                  "Lembrar meu login",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CadastroScreen()),
-                    );
-                  },
-                  child: Text(
-                    "Cadastrar-se",
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Text(
-                  "Esqueci minha senha",
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
             SizedBox(height: 50),
             ElevatedButton(
               onPressed: () {},
@@ -86,10 +61,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 minimumSize: Size(1, 60),
               ),
-              child: Text(
-                "Entrar",
-                style: TextStyle(color: Colors.black, fontSize: 24),
-              ),
+              child: Text("Entrar", style: TextStyle(color: Colors.black, fontSize: 24)),
             ),
           ],
         ),
