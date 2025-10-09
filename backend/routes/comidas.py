@@ -101,6 +101,57 @@ def reservar():
             "status": "error",
             "message": "Erro ao cadastrar reserva. Detalhes: " + str(e)
         }), 500
+    
+
+@comidas.route('/logar', methods=['POST'])
+def login():
+    data = request.json
+
+    identificacao = data.get('identificacao')  # Pode ser matrícula ou CPF
+    senha = data.get('senha')
+
+    try:
+        if not identificacao or not senha:
+            return jsonify({
+                "status": "error",
+                "message": "Identificação e senha são obrigatórias!"
+            }), 400
+
+        # Busca o usuário pela matrícula ou CPF
+        result = db.query(
+            """
+            SELECT nome_consumidor, cpf_consumidor, matricula
+            FROM consumidores
+            WHERE (cpf_consumidor = %s OR matricula = %s)
+              AND senha = %s
+            """,
+            (identificacao, identificacao, senha)
+        )
+
+        if len(result) == 0:
+            return jsonify({
+                "status": "error",
+                "message": "Usuário ou senha inválidos!"
+            }), 401
+
+        usuario = result[0]
+        return jsonify({
+            "status": "success",
+            "message": "Login realizado com sucesso!",
+            "usuario": {
+                "nome_consumidor": usuario["nome_consumidor"],
+                "cpf_consumidor": usuario["cpf_consumidor"],
+                "matricula": usuario["matricula"]
+            }
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": "Erro ao realizar login. Detalhes: " + str(e)
+        }), 500
+
+
 
 @comidas.route('/reservas', methods=['GET'])
 def get():
