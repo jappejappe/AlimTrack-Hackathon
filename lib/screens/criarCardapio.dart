@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:alimtrack/logic/cardapio.dart';
 
 class Criarcardapio extends StatefulWidget {
   @override
@@ -8,17 +9,21 @@ class Criarcardapio extends StatefulWidget {
 class _CriarcardapioState extends State<Criarcardapio> {
   final TextEditingController addController = TextEditingController();
 
-  final List<String> items = [
-    'Arroz',
-    'Feijão',
-    'Peixe Frito',
-    'Saladas',
-    'Frutas',
-  ];
+  late Future<List<String>> items;
+  List<String> cardapio = [];
 
-  // Função que retorna a lista de alimentos
-  List<String> getCardapio() {
-    return items;
+  @override
+  void initState() {
+    super.initState();
+    items = getCardapio();
+    _loadCardapio();
+  }
+
+  Future<void> _loadCardapio() async {
+    List<String> fetchedCardapio = await getCardapio();
+    setState(() {
+      cardapio = fetchedCardapio;
+    });
   }
 
   @override
@@ -52,67 +57,86 @@ class _CriarcardapioState extends State<Criarcardapio> {
               const SizedBox(height: 30),
 
               // Lista de itens do cardápio
-              ...items.asMap().entries.map((entry) {
-                int idx = entry.key;
-                String item = entry.value;
+              FutureBuilder<List<String>>(
+                future: items,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator(); // Exibir carregando
+                  }
 
-                return Column(
-                  children: [
-                    Row(
-                      children: [
-                        // Checkbox
-                        Container(
-                          width: 24,
-                          height: 24,
-                          decoration: BoxDecoration(
-                            color: Colors.black87,
-                            border: Border.all(color: Colors.black87, width: 2),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        const SizedBox(width: 15),
-                        // Nome do item
-                        Expanded(
-                          child: Text(
-                            item,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () {
-                            setState(() {
-                              items.removeAt(idx);
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    if (idx < items.length - 1)
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        height: 1,
-                        child: Row(
-                          children: List.generate(
-                            30,
-                            (index) => Expanded(
-                              child: Container(
-                                color:
-                                    index % 2 == 0
-                                        ? Colors.grey
-                                        : Colors.transparent,
-                                height: 1,
+                  if (snapshot.hasError) {
+                    return Text('Erro: ${snapshot.error}');
+                  }
+
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Text('Nenhum item encontrado no cardápio');
+                  }
+
+                  // Listar os itens do cardápio
+                  var cardapio = snapshot.data!;
+                  return Column(
+                    children:
+                        cardapio.asMap().entries.map((entry) {
+                          int idx = entry.key;
+                          String item = entry.value;
+
+                          return Column(
+                            children: [
+                              Row(
+                                children: [
+                                  // Checkbox
+                                  Container(
+                                    width: 24,
+                                    height: 24,
+                                    decoration: BoxDecoration(
+                                      color: Colors.black87,
+                                      border: Border.all(
+                                        color: Colors.black87,
+                                        width: 2,
+                                      ),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 15),
+                                  // Nome do item
+                                  Expanded(
+                                    child: Text(
+                                      item,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                );
-              }).toList(),
+                              if (idx < cardapio.length - 1)
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                  ),
+                                  height: 1,
+                                  child: Row(
+                                    children: List.generate(
+                                      30,
+                                      (index) => Expanded(
+                                        child: Container(
+                                          color:
+                                              index % 2 == 0
+                                                  ? Colors.grey
+                                                  : Colors.transparent,
+                                          height: 1,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          );
+                        }).toList(),
+                  );
+                },
+              ),
 
               const SizedBox(height: 30),
 
@@ -135,7 +159,7 @@ class _CriarcardapioState extends State<Criarcardapio> {
                     onPressed: () {
                       if (addController.text.isNotEmpty) {
                         setState(() {
-                          items.add(addController.text);
+                          cardapio.add(addController.text);
                           addController.text = "";
                         });
                       }
@@ -156,11 +180,15 @@ class _CriarcardapioState extends State<Criarcardapio> {
               ),
               SizedBox(height: 40),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   // Retorna a lista de alimentos
-                  List<String> cardapio = getCardapio();
-                  print('Cardápio: $cardapio');
                   // Aqui você pode retornar para a tela anterior com Navigator.pop
+                  String message = await postCardapio(cardapio);
+
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(message)));
+
                   Navigator.pop(context, cardapio);
                 },
                 style: ElevatedButton.styleFrom(
