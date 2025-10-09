@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:alimtrack/logic/cadastro.dart';
 
 class CadastroScreen extends StatelessWidget {
   @override
@@ -53,7 +54,9 @@ class CadastroScreen extends StatelessWidget {
             ),
             SizedBox(height: 50),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                cadastrar();
+              },
               style: ElevatedButton.styleFrom(
                 side: BorderSide(color: Colors.black, width: 2.0),
                 shape: RoundedRectangleBorder(

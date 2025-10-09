@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_dotenv: ^6.0.0
+  http: ^1.5.0
 
 dev_dependencies:
   flutter_test:
@@ -18,4 +20,5 @@ dev_dependencies:
 flutter:
   assets:
     - assets/profile.png
+    - ".env"
   uses-material-design: true
