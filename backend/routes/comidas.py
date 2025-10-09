@@ -157,30 +157,27 @@ def enviar_cardapio():
     data = request.json
 
     dia = data.get('dia')
-    cardapio = data.get('cardapio')
+    cardapio = data.get('cardapio')  # Espera uma lista
 
     try:
-        if not dia or not cardapio:
+        if not dia or not cardapio or not isinstance(cardapio, list):
             return jsonify({
                 "status": "error",
-                "message": "Campos 'dia' e 'cardapio' são obrigatórios!"
+                "message": "Dia e cardápio (lista) são obrigatórios!"
             }), 400
 
-        # Converte automaticamente para JSON válido
-        cardapio_json = json.dumps(cardapio) if not isinstance(cardapio, dict) else json.dumps(cardapio)
+        # Converte a lista em JSON string para salvar no banco
+        cardapio_json = json.dumps(cardapio)
 
         db.query(
-            """
-            INSERT INTO cardapios (dia, cardapio)
-            VALUES (%s, %s);
-            """,
+            "INSERT INTO cardapios (dia, cardapio) VALUES (%s, %s);",
             (dia, cardapio_json)
         )
 
         return jsonify({
             "status": "success",
             "message": "Cardápio cadastrado com sucesso!"
-        }), 201
+        }), 200
 
     except Exception as e:
         return jsonify({
@@ -196,6 +193,39 @@ def enviar_cardapio():
 def get():
     resultado = db.query('SELECT * FROM reservas;')
     return jsonify(len(resultado)), 200
+
+@comidas.route('/cardapio/<dia>', methods=['GET'])
+def get_cardapio(dia):
+    try:
+        result = db.query(
+            "SELECT cardapio FROM cardapios WHERE dia = %s;",
+            (dia,)
+        )
+
+        if not result:
+            return jsonify({
+                "status": "error",
+                "message": "Nenhum cardápio encontrado para este dia."
+            }), 404
+
+        # O cardápio já está salvo como lista JSON, então só precisamos garantir que é lista
+        cardapio = result[0]["cardapio"]
+        if isinstance(cardapio, str):
+            cardapio = json.loads(cardapio)
+
+        return jsonify({
+            "status": "success",
+            "dia": dia,
+            "cardapio": cardapio
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": "Erro ao buscar cardápio. Detalhes: " + str(e)
+        }), 500
+
+
 
 @comidas.route('/atualizar_dias', methods=['PUT'])
 def atualizar_dias():
