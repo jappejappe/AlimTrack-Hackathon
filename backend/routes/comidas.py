@@ -150,6 +150,45 @@ def login():
             "status": "error",
             "message": "Erro ao realizar login. Detalhes: " + str(e)
         }), 500
+    
+
+@comidas.route('/enviar_cardapio', methods=['POST'])
+def enviar_cardapio():
+    data = request.json
+
+    dia = data.get('dia')
+    cardapio = data.get('cardapio')
+
+    try:
+        if not dia or not cardapio:
+            return jsonify({
+                "status": "error",
+                "message": "Campos 'dia' e 'cardapio' são obrigatórios!"
+            }), 400
+
+        # Converte automaticamente para JSON válido
+        cardapio_json = json.dumps(cardapio) if not isinstance(cardapio, dict) else json.dumps(cardapio)
+
+        db.query(
+            """
+            INSERT INTO cardapios (dia, cardapio)
+            VALUES (%s, %s);
+            """,
+            (dia, cardapio_json)
+        )
+
+        return jsonify({
+            "status": "success",
+            "message": "Cardápio cadastrado com sucesso!"
+        }), 201
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": "Erro ao cadastrar cardápio. Detalhes: " + str(e)
+        }), 500
+
+
 
 
 

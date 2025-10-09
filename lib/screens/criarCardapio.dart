@@ -8,13 +8,18 @@ class Criarcardapio extends StatefulWidget {
 class _CriarcardapioState extends State<Criarcardapio> {
   final TextEditingController addController = TextEditingController();
 
-  final List<Map<String, dynamic>> items = [
-    {'name': 'Arroz', 'selected': false},
-    {'name': 'Feijão', 'selected': false},
-    {'name': 'Peixe Frito', 'selected': false},
-    {'name': 'Saladas', 'selected': false},
-    {'name': 'Frutas', 'selected': false},
+  final List<String> items = [
+    'Arroz',
+    'Feijão',
+    'Peixe Frito',
+    'Saladas',
+    'Frutas',
   ];
+
+  // Função que retorna a lista de alimentos
+  List<String> getCardapio() {
+    return items;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +54,7 @@ class _CriarcardapioState extends State<Criarcardapio> {
               // Lista de itens do cardápio
               ...items.asMap().entries.map((entry) {
                 int idx = entry.key;
-                Map<String, dynamic> item = entry.value;
+                String item = entry.value;
 
                 return Column(
                   children: [
@@ -69,7 +74,7 @@ class _CriarcardapioState extends State<Criarcardapio> {
                         // Nome do item
                         Expanded(
                           child: Text(
-                            item['name'],
+                            item,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
@@ -80,7 +85,7 @@ class _CriarcardapioState extends State<Criarcardapio> {
                           icon: Icon(Icons.delete),
                           onPressed: () {
                             setState(() {
-                              items.remove(item);
+                              items.removeAt(idx);
                             });
                           },
                         ),
@@ -128,13 +133,12 @@ class _CriarcardapioState extends State<Criarcardapio> {
                   SizedBox(width: 20),
                   ElevatedButton(
                     onPressed: () {
-                      setState(() {
-                        items.add({
-                          "name": addController.text,
-                          "selected": false,
+                      if (addController.text.isNotEmpty) {
+                        setState(() {
+                          items.add(addController.text);
+                          addController.text = "";
                         });
-                        addController.text = "";
-                      });
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       side: BorderSide(color: Colors.black, width: 2.0),
@@ -150,9 +154,15 @@ class _CriarcardapioState extends State<Criarcardapio> {
                   ),
                 ],
               ),
-              SizedBox(height: 40,),
+              SizedBox(height: 40),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Retorna a lista de alimentos
+                  List<String> cardapio = getCardapio();
+                  print('Cardápio: $cardapio');
+                  // Aqui você pode retornar para a tela anterior com Navigator.pop
+                  Navigator.pop(context, cardapio);
+                },
                 style: ElevatedButton.styleFrom(
                   side: BorderSide(color: Colors.black, width: 2.0),
                   shape: RoundedRectangleBorder(
