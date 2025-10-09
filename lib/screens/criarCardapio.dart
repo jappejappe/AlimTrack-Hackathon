@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:alimtrack/logic/cardapio.dart';
 
 class Criarcardapio extends StatefulWidget {
   @override
@@ -156,11 +157,17 @@ class _CriarcardapioState extends State<Criarcardapio> {
               ),
               SizedBox(height: 40),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   // Retorna a lista de alimentos
                   List<String> cardapio = getCardapio();
                   print('Cardápio: $cardapio');
                   // Aqui você pode retornar para a tela anterior com Navigator.pop
+                  String message = await postCardapio(cardapio);
+
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(message)));
+
                   Navigator.pop(context, cardapio);
                 },
                 style: ElevatedButton.styleFrom(
