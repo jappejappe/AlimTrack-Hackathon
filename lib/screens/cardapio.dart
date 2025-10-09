@@ -1,4 +1,5 @@
 import 'package:alimtrack/logic/cardapio.dart';
+import 'package:alimtrack/logic/reservar.dart';
 import 'package:flutter/material.dart';
 
 class CardapioScreen extends StatefulWidget {
@@ -134,8 +135,8 @@ class _CardapioScreenState extends State<CardapioScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // TO DO: Ação de confirmar a presença no almoço
+                  onPressed: () async {
+                    await reservar;
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE8E6D5),
