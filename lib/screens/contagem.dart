@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-String totalAlunos = "720"; //TODO: Uma função que pegue esse total
+class ContagemScreen extends StatefulWidget {
+  @override
+  _ContagemScreenState createState() => _ContagemScreenState();
+}
 
-class ContagemScreen extends StatelessWidget {
+class _ContagemScreenState extends State<ContagemScreen> {
+  int totalAlunos = 0;
+  bool loading = true;
+
   final List<Map<String, dynamic>> items = [
     {'name': 'Arroz', 'selected': false},
     {'name': 'Feijão', 'selected': false},
@@ -10,6 +18,34 @@ class ContagemScreen extends StatelessWidget {
     {'name': 'Saladas', 'selected': false},
     {'name': 'Frutas', 'selected': false},
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTotalAlunos();
+  }
+
+  Future<void> fetchTotalAlunos() async {
+    await dotenv.load();
+    final apiUrl = dotenv.get('API_URL');
+
+    try {
+      final response = await http.get(Uri.parse('$apiUrl/api/refeitorio/reservas'));
+      if (response.statusCode == 200) {
+        setState(() {
+          totalAlunos = int.parse(response.body);
+          loading = false;
+        });
+      } else {
+        print('Erro ao buscar reservas: ${response.statusCode}');
+        setState(() => loading = false);
+      }
+    } catch (e) {
+      print('Erro na requisição: $e');
+      setState(() => loading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,88 +55,88 @@ class ContagemScreen extends StatelessWidget {
       body: Container(
         padding: EdgeInsets.all(24.0),
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
-        child: ListView(
-          children: [
-            SizedBox(height: 10),
-            Text(
-              "CONFIRMADOS",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 40),
-            ),
-            SizedBox(height: 50),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(
-                  "ALUNOS CONFIRAMDOS",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 28),
-                ),
-                Text(
-                  totalAlunos,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 60, fontWeight: FontWeight.w900),
-                ),
-              ],
-            ),
-
-            SizedBox(height: 60),
-
-            ...items.asMap().entries.map((entry) {
-              int idx = entry.key;
-              Map<String, dynamic> item = entry.value;
-
-              return Column(
+        child: loading
+            ? Center(child: CircularProgressIndicator())
+            : ListView(
                 children: [
+                  SizedBox(height: 10),
+                  Text(
+                    "CONFIRMADOS",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 40),
+                  ),
+                  SizedBox(height: 50),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      // Checkbox
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color: Colors.black87,
-                          border: Border.all(color: Colors.black87, width: 2),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
+                      Text(
+                        "ALUNOS CONFIRMADOS",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 28),
                       ),
-                      const SizedBox(width: 15),
-                      // Nome do item
-                      Expanded(
-                        child: Text(
-                          item['name'],
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
+                      Text(
+                        '$totalAlunos',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 60,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ],
                   ),
-                  if (idx < items.length - 1)
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      height: 1,
-                      child: Row(
-                        children: List.generate(
-                          30,
-                          (index) => Expanded(
-                            child: Container(
-                              color:
-                                  index % 2 == 0
-                                      ? Colors.grey
-                                      : Colors.transparent,
-                              height: 1,
+                  SizedBox(height: 60),
+                  ...items.asMap().entries.map((entry) {
+                    int idx = entry.key;
+                    Map<String, dynamic> item = entry.value;
+
+                    return Column(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                color: Colors.black87,
+                                border: Border.all(color: Colors.black87, width: 2),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            const SizedBox(width: 15),
+                            Expanded(
+                              child: Text(
+                                item['name'],
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (idx < items.length - 1)
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            height: 1,
+                            child: Row(
+                              children: List.generate(
+                                30,
+                                (index) => Expanded(
+                                  child: Container(
+                                    color: index % 2 == 0
+                                        ? Colors.grey
+                                        : Colors.transparent,
+                                    height: 1,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
+                      ],
+                    );
+                  }).toList(),
                 ],
-              );
-            }).toList(),
-          ],
-        ),
+              ),
       ),
     );
   }

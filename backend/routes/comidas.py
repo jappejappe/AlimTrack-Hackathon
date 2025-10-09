@@ -97,4 +97,4 @@ def reservar():
 @comidas.route('/reservas', methods=['GET'])
 def get():
     resultado = db.query('SELECT * FROM reservas;')
-    return jsonify(resultado), 200
+    return jsonify(len(resultado)), 200
