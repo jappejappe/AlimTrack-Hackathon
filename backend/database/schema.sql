@@ -1,10 +1,11 @@
 CREATE TABLE public.consumidores (
+	id_consumidor serial NOT NULL,
 	nome_consumidor varchar NOT NULL,
 	matricula varchar NULL,
 	senha varchar NOT NULL,
 	cpf_consumidor char(11) NULL,
 	dias_padrao json NOT NULL,
-	CONSTRAINT consumidores_pk PRIMARY KEY (matricula),
+	CONSTRAINT consumidores_pk PRIMARY KEY (id_consumidor),
 	CONSTRAINT consumidores_unique UNIQUE (cpf_consumidor)
 );
 
@@ -26,5 +27,5 @@ CREATE TABLE public.reservas (
 	hora_reserva timestamp NOT NULL,
 	identificacao varchar NOT NULL,
 	CONSTRAINT reservas_pk PRIMARY KEY (id_reserva),
-	CONSTRAINT reservas_unique UNIQUE (matricula)
+	CONSTRAINT reservas_unique UNIQUE (identificacao)
 );
