@@ -88,13 +88,18 @@ def reservar():
         # O uso de parâmetros (%s) previne ataques de SQL Injection.
         db.query(
             'INSERT INTO public.reservas ' \
-            '(matricula, hora_reserva) ' \
+            '(identificacao, hora_reserva) ' \
             'VALUES (%s, %s);',
             (
                 matricula,
                 hora_reserva
             )
         )
+
+        return jsonify({
+            "status": "success",
+            "message": "Reserva cadastrada com sucesso!"
+        }), 201
     
     except Exception as e:
         return jsonify({
@@ -227,7 +232,7 @@ def get_cardapio(dia):
 
 
 
-@comidas.route('/atualizar_dias', methods=['PUT'])
+@comidas.route('/atualizar_dias', methods=['PUT', 'POST'])
 def atualizar_dias():
     data = request.json
 

@@ -3,6 +3,7 @@ import 'package:alimtrack/screens/login.dart';
 import 'package:alimtrack/screens/cardapio.dart';
 import 'package:alimtrack/screens/cadastro.dart';
 import 'package:alimtrack/screens/contagem.dart';
+import 'package:alimtrack/screens/escolha.dart';
 
 void main() {
   runApp(const MainApp());
@@ -14,7 +15,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ContagemScreen(),
+      home: EscolhaScreen(cpfConsumidor: "09253283912"),
       theme: ThemeData(
         inputDecorationTheme: InputDecorationTheme(
           labelStyle: TextStyle(color: Colors.black)
@@ -28,6 +29,7 @@ class MainApp extends StatelessWidget {
         '/cardapio': (context) => CardapioScreen(),
         '/cadastro': (context) => CadastroScreen(),
         '/contagem': (context) => ContagemScreen(),
+        '/escolha': (context) => EscolhaScreen(cpfConsumidor: "09253283912"),
         // Medicine routes
       },
     );

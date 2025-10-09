@@ -1,25 +1,85 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class EscolhaScreen extends StatefulWidget {
+  final String cpfConsumidor; // CPF do usuário logado
+
+  const EscolhaScreen({required this.cpfConsumidor, super.key});
+
   @override
   State<EscolhaScreen> createState() => _EscolhaScreenState();
 }
 
-List lista = [true, false, true, false, true, false, true];  //Lista de confirmações programadas
-
 class _EscolhaScreenState extends State<EscolhaScreen> {
+  // Segunda a Domingo
+  List<bool> lista = [true, false, true, false, true, false, true];
+
+  Future<void> enviarEscolhas() async {
+    await dotenv.load();
+    final apiUrl = dotenv.get('API_URL');
+
+    final diasPadrao = {
+      "segunda-feira": lista[0] ? 1 : 0,
+      "terça-feira": lista[1] ? 1 : 0,
+      "quarta-feira": lista[2] ? 1 : 0,
+      "quinta-feira": lista[3] ? 1 : 0,
+      "sexta-feira": lista[4] ? 1 : 0,
+      "sábado": lista[5] ? 1 : 0,
+      "domingo": lista[6] ? 1 : 0,
+    };
+
+    final body = jsonEncode({
+      "cpf_consumidor": widget.cpfConsumidor,
+      "dias_padrao": diasPadrao,
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('$apiUrl/api/refeitorio/atualizar_dias'),
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Escolhas enviadas com sucesso!")),
+        );
+        print(data);
+      } else {
+        print("Erro: ${response.statusCode}");
+        print(response.body);
+      }
+    } catch (e) {
+      print("Erro ao enviar escolhas: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Falha ao enviar escolhas. Verifique a conexão.")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final diasDaSemana = [
+      "Segunda-feira",
+      "Terça-feira",
+      "Quarta-feira",
+      "Quinta-feira",
+      "Sexta-feira",
+      "Sábado",
+      "Domingo"
+    ];
+
     return Scaffold(
       backgroundColor: Color(0xFFd5d8ba),
       extendBodyBehindAppBar: true,
       appBar: AppBar(backgroundColor: Colors.transparent),
       body: Container(
         padding: EdgeInsets.all(24.0),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
         child: ListView(
           children: [
-            SizedBox(height: 10),
             Text(
               "PERSONALIZAR ESCOLHA",
               textAlign: TextAlign.center,
@@ -31,124 +91,30 @@ class _EscolhaScreenState extends State<EscolhaScreen> {
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 50),
-            Row(
-              children: [
-                Switch(
-                  value: lista[0],
-                  onChanged: (value) {
-                    setState(() {
-                      lista[0] = !lista[0];
-                    });
-                  },
-                  activeColor: Colors.white,
-                  trackColor: WidgetStateProperty.resolveWith<Color>((states) {
-                    return Colors.black;
-                  }),
-                ),
-                Text("Segunda-feira", style: TextStyle(fontSize: 32)),
-              ],
-            ),
-            Row(
-              children: [
-                Switch(
-                  value: lista[1],
-                  onChanged: (value) {
-                    setState(() {
-                      lista[1] = !lista[1];
-                    });
-                  },
-                  activeColor: Colors.white,
-                  trackColor: WidgetStateProperty.resolveWith<Color>((states) {
-                    return Colors.black;
-                  }),
-                ),
-                Text("Quarta-feira", style: TextStyle(fontSize: 32)),
-              ],
-            ),
-            Row(
-              children: [
-                Switch(
-                  value: lista[2],
-                  onChanged: (value) {
-                    setState(() {
-                      lista[2] = !lista[2];
-                    });
-                  },
-                  activeColor: Colors.white,
-                  trackColor: WidgetStateProperty.resolveWith<Color>((states) {
-                    return Colors.black;
-                  }),
-                ),
-                Text("Terça-feira", style: TextStyle(fontSize: 32)),
-              ],
-            ),
-            Row(
-              children: [
-                Switch(
-                  value: lista[3],
-                  onChanged: (value) {
-                    setState(() {
-                      lista[3] = !lista[3];
-                    });
-                  },
-                  activeColor: Colors.white,
-                  trackColor: WidgetStateProperty.resolveWith<Color>((states) {
-                    return Colors.black;
-                  }),
-                ),
-                Text("Quinta-feira", style: TextStyle(fontSize: 32)),
-              ],
-            ),
-            Row(
-              children: [
-                Switch(
-                  value: lista[4],
-                  onChanged: (value) {
-                    setState(() {
-                      lista[4] = !lista[4];
-                    });
-                  },
-                  activeColor: Colors.white,
-                  trackColor: WidgetStateProperty.resolveWith<Color>((states) {
-                    return Colors.black;
-                  }),
-                ),
-                Text("Sexta-feira", style: TextStyle(fontSize: 32)),
-              ],
-            ),
-            Row(
-              children: [
-                Switch(
-                  value: lista[5],
-                  onChanged: (value) {
-                    setState(() {
-                      lista[5] = !lista[5];
-                    });
-                  },
-                  activeColor: Colors.white,
-                  trackColor: WidgetStateProperty.resolveWith<Color>((states) {
-                    return Colors.black;
-                  }),
-                ),
-                Text("Sábado", style: TextStyle(fontSize: 32)),
-              ],
-            ),
-            Row(
-              children: [
-                Switch(
-                  value: lista[6],
-                  onChanged: (value) {
-                    setState(() {
-                      lista[6] = !lista[6];
-                    });
-                  },
-                  activeColor: Colors.white,
-                  trackColor: WidgetStateProperty.resolveWith<Color>((states) {
-                    return Colors.black;
-                  }),
-                ),
-                Text("Domingo", style: TextStyle(fontSize: 32)),
-              ],
+            ...lista.asMap().entries.map((entry) {
+              int idx = entry.key;
+              bool val = entry.value;
+              return Row(
+                children: [
+                  Switch(
+                    value: val,
+                    onChanged: (value) {
+                      setState(() {
+                        lista[idx] = value;
+                      });
+                    },
+                    activeColor: Colors.white,
+                    trackColor:
+                        MaterialStateProperty.resolveWith<Color>((states) => Colors.black),
+                  ),
+                  Text(diasDaSemana[idx], style: TextStyle(fontSize: 24)),
+                ],
+              );
+            }).toList(),
+            SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: enviarEscolhas,
+              child: Text("Enviar", style: TextStyle(fontSize: 24)),
             ),
           ],
         ),
